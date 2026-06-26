@@ -55,6 +55,24 @@ create table activity_logs (
   unique(daily_log_id, activity_id)
 );
 
+-- Auto-create a profile row when a new user signs up
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, protocol_type, enabled_supplements)
+  values (
+    new.id,
+    'none',
+    array['lions_mane', 'morning_meds']
+  );
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
 -- Row Level Security (RLS) — required for multi-user safety
 alter table profiles enable row level security;
 alter table user_activities enable row level security;
