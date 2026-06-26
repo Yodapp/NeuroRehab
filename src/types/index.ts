@@ -12,6 +12,7 @@ export interface UserProfile {
   protocol_type: ProtocolType
   protocol_start_date: string
   enabled_supplements: string[]
+  onboarding_completed: boolean
 }
 
 export interface Activity {

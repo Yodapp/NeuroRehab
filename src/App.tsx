@@ -1,17 +1,41 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { BottomNav } from '@/components/BottomNav'
+import { OnboardingWizard } from '@/components/OnboardingWizard'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase'
 import { Log } from '@/pages/Log'
 import { Login } from '@/pages/Login'
 import { Profile } from '@/pages/Profile'
 import { Today } from '@/pages/Today'
 import { Week } from '@/pages/Week'
+import type { UserProfile } from '@/types'
 
 function AppContent() {
   const { user, loading } = useAuth()
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
 
-  if (loading) {
+  useEffect(() => {
+    if (!user) {
+      setProfile(null)
+      setProfileLoading(false)
+      return
+    }
+
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        setProfile(data)
+        setProfileLoading(false)
+      })
+  }, [user])
+
+  if (loading || (user && profileLoading)) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -21,6 +45,14 @@ function AppContent() {
 
   if (!user) return <Login />
 
+  if (!profile?.onboarding_completed) {
+    return (
+      <OnboardingWizard
+        onComplete={() => setProfile((p) => (p ? { ...p, onboarding_completed: true } : p))}
+      />
+    )
+  }
+
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <main className="pb-20">
@@ -28,7 +60,15 @@ function AppContent() {
           <Route path="/" element={<Today />} />
           <Route path="/log" element={<Log />} />
           <Route path="/week" element={<Week />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/profile"
+            element={
+              <Profile
+                profile={profile}
+                onProfileUpdate={(p) => setProfile(p)}
+              />
+            }
+          />
         </Routes>
       </main>
       <BottomNav />

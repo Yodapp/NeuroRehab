@@ -7,7 +7,8 @@ create table profiles (
   created_at timestamptz default now(),
   protocol_type text not null default 'none',
   protocol_start_date date,
-  enabled_supplements text[] default array['lions_mane', 'morning_meds']
+  enabled_supplements text[] default array['lions_mane', 'morning_meds'],
+  onboarding_completed boolean default false
 );
 
 -- activities (master list)
