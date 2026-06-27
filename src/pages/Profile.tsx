@@ -68,16 +68,16 @@ export function Profile({ profile, onProfileUpdate }: ProfileProps) {
     : `${activityNames.slice(0, 3).join(', ')} (+${activityNames.length - 3} till)`
 
   return (
-    <div className="flex flex-col gap-6 px-4 py-6">
-      <h1 className="text-2xl font-semibold">Profil</h1>
+    <div className="flex flex-col gap-6 p-5 pb-32">
+      <h1 className="text-title">Profil</h1>
 
-      <div className="flex flex-col gap-4 rounded-xl border bg-card p-4">
+      <div className="flex flex-col gap-4 rounded-[14px] border border-border-subtle bg-bg-card p-4">
         <div>
-          <p className="text-sm text-muted-foreground">Protokoll</p>
-          <p className="font-medium">
+          <p className="text-meta text-text-secondary">Protokoll</p>
+          <p className="text-body font-medium text-text-primary">
             {protocolLabels[profile.protocol_type] ?? profile.protocol_type}
             {profile.protocol_start_date && (
-              <span className="text-muted-foreground">
+              <span className="text-text-secondary">
                 {' '}(start: {new Date(profile.protocol_start_date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'short' })})
               </span>
             )}
@@ -85,21 +85,29 @@ export function Profile({ profile, onProfileUpdate }: ProfileProps) {
         </div>
 
         <div>
-          <p className="text-sm text-muted-foreground">Tillskott</p>
-          <p className="font-medium">{supplementsList || 'Inga'}</p>
+          <p className="text-meta text-text-secondary">Tillskott</p>
+          <p className="text-body font-medium text-text-primary">{supplementsList || 'Inga'}</p>
         </div>
 
         <div>
-          <p className="text-sm text-muted-foreground">Aktiviteter</p>
-          <p className="font-medium">{activitiesDisplay || 'Inga'}</p>
+          <p className="text-meta text-text-secondary">Aktiviteter</p>
+          <p className="text-body font-medium text-text-primary">{activitiesDisplay || 'Inga'}</p>
         </div>
       </div>
 
-      <Button variant="outline" onClick={() => setShowWizard(true)}>
+      <Button
+        variant="outline"
+        className="min-h-[50px] rounded-[14px] text-button text-accent-blue border-border-subtle"
+        onClick={() => setShowWizard(true)}
+      >
         Ändra inställningar
       </Button>
 
-      <Button variant="destructive" onClick={signOut}>
+      <Button
+        variant="destructive"
+        className="min-h-[50px] rounded-[14px] text-button bg-accent-red"
+        onClick={signOut}
+      >
         Logga ut
       </Button>
     </div>

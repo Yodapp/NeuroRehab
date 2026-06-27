@@ -5,7 +5,6 @@ import { BottomNav } from '@/components/BottomNav'
 import { OnboardingWizard } from '@/components/OnboardingWizard'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { Log } from '@/pages/Log'
 import { Login } from '@/pages/Login'
 import { Profile } from '@/pages/Profile'
 import { Today } from '@/pages/Today'
@@ -38,7 +37,7 @@ function AppContent() {
   if (loading || (user && profileLoading)) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent-green border-t-transparent" />
       </div>
     )
   }
@@ -54,11 +53,10 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <main className="pb-20">
+    <div className="min-h-dvh bg-bg-primary text-text-primary">
+      <main className="pb-[100px]">
         <Routes>
           <Route path="/" element={<Today />} />
-          <Route path="/log" element={<Log />} />
           <Route path="/week" element={<Week />} />
           <Route
             path="/profile"

@@ -7,14 +7,14 @@ export function Week() {
   if (loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent-green border-t-transparent" />
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4">
-      <h1 className="text-2xl font-semibold">Vecka</h1>
+    <div className="flex flex-col gap-6 p-5 pb-32">
+      <h1 className="text-title">Vecka</h1>
       <WeeklyOverview
         days={days}
         weekLabel={weekLabel}

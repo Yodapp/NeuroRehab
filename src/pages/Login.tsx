@@ -38,44 +38,52 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex min-h-dvh items-center justify-center bg-bg-primary px-5">
+      <Card className="w-full max-w-sm rounded-[14px] border-border-subtle bg-bg-card">
         <CardHeader>
-          <CardTitle>{isSignUp ? 'Skapa konto' : 'Logga in'}</CardTitle>
+          <CardTitle className="text-section text-text-primary">
+            {isSignUp ? 'Skapa konto' : 'Logga in'}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-post</Label>
+              <Label htmlFor="email" className="text-text-secondary">E-post</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="rounded-[14px] border-border-subtle bg-bg-inactive text-text-primary"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Lösenord</Label>
+              <Label htmlFor="password" className="text-text-secondary">Lösenord</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="rounded-[14px] border-border-subtle bg-bg-inactive text-text-primary"
               />
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            {message && <p className="text-sm text-green-600">{message}</p>}
+            {error && <p className="text-meta text-accent-red">{error}</p>}
+            {message && <p className="text-meta text-accent-green">{message}</p>}
 
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button
+              type="submit"
+              className="min-h-[50px] w-full rounded-[14px] bg-accent-blue text-button text-white"
+              disabled={submitting}
+            >
               {isSignUp ? 'Skapa konto' : 'Logga in'}
             </Button>
 
             <button
               type="button"
-              className="w-full text-center text-sm text-muted-foreground underline"
+              className="w-full text-center text-body text-accent-blue"
               onClick={() => {
                 setIsSignUp(!isSignUp)
                 setError(null)

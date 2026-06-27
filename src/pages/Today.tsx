@@ -1,5 +1,7 @@
+import { EveningLog } from '@/components/EveningLog'
 import { MorningChecklist } from '@/components/MorningChecklist'
 import { ProtocolBadge } from '@/components/ProtocolBadge'
+import { useEveningLog } from '@/hooks/useEveningLog'
 import { useTodayLog } from '@/hooks/useTodayLog'
 
 const formattedDate = new Intl.DateTimeFormat('sv-SE', {
@@ -9,31 +11,49 @@ const formattedDate = new Intl.DateTimeFormat('sv-SE', {
 }).format(new Date())
 
 export function Today() {
-  const { profile, log, phase, phaseLabel, loading, toggleSupplement } = useTodayLog()
+  const todayLog = useTodayLog()
+  const eveningLog = useEveningLog()
 
-  if (loading) {
+  if (todayLog.loading || eveningLog.loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent-green border-t-transparent" />
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-8 overflow-y-auto p-5 pb-32">
       <div>
-        <h1 className="text-2xl font-semibold">Morgon</h1>
-        <p className="text-sm capitalize text-muted-foreground">{formattedDate}</p>
+        <h1 className="text-title">Idag</h1>
+        <p className="text-meta capitalize text-text-secondary">{formattedDate}</p>
       </div>
-      <ProtocolBadge phase={phase} label={phaseLabel} />
-      {profile && (
-        <MorningChecklist
-          profile={profile}
-          log={log}
-          phase={phase}
-          onToggle={toggleSupplement}
+
+      <ProtocolBadge phase={todayLog.phase} label={todayLog.phaseLabel} />
+
+      <section>
+        <h2 className="text-section mb-3">Dagens stack</h2>
+        {todayLog.profile && (
+          <MorningChecklist
+            profile={todayLog.profile}
+            log={todayLog.log}
+            phase={todayLog.phase}
+            onToggle={todayLog.toggleSupplement}
+          />
+        )}
+      </section>
+
+      <hr className="border-border-subtle" />
+
+      <section>
+        <h2 className="text-section mb-3">Kvällslogg</h2>
+        <EveningLog
+          activities={eveningLog.activities}
+          log={eveningLog.log}
+          onToggleActivity={eveningLog.toggleActivity}
+          onUpdateRating={eveningLog.updateRating}
         />
-      )}
+      </section>
     </div>
   )
 }

@@ -130,13 +130,13 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
   }, {})
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background px-4 py-6">
+    <div className="flex min-h-dvh flex-col bg-bg-primary px-5 py-6">
       {/* Progress */}
       <div className="mb-8">
-        <p className="text-sm text-muted-foreground">Steg {step} av {totalSteps}</p>
-        <div className="mt-2 h-1.5 rounded-full bg-muted">
+        <p className="text-meta text-text-secondary">Steg {step} av {totalSteps}</p>
+        <div className="mt-2 h-1 rounded-full bg-bg-inactive">
           <div
-            className="h-full rounded-full bg-primary transition-all"
+            className="h-full rounded-full bg-accent-green transition-base"
             style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
@@ -146,7 +146,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 1 — Microdosing */}
         {actualStep === 1 && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-xl font-semibold">Använder du psilocybin i din rehabilitering?</h2>
+            <h2 className="text-section">Använder du psilocybin i din rehabilitering?</h2>
             <div className="flex flex-col gap-3">
               <Button
                 size="lg"
@@ -183,7 +183,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 2 — Protocol (only if microdosing) */}
         {actualStep === 2 && usesMicrodosing && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-xl font-semibold">Vilket upplägg följer du?</h2>
+            <h2 className="text-section">Vilket upplägg följer du?</h2>
             <div className="flex flex-col gap-3">
               {([
                 ['stamets_4_3', 'Stamets 4:3'],
@@ -193,8 +193,8 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 <Button
                   key={type}
                   size="lg"
-                  variant={protocolType === type ? 'default' : 'outline'}
-                  className="h-14 text-lg"
+                  variant="outline"
+                  className={`h-14 text-button ${protocolType === type ? 'border-2 border-accent-green bg-[rgba(48,209,88,0.1)]' : 'border-border-subtle bg-bg-card'}`}
                   onClick={() => setProtocolType(type)}
                 >
                   {label}
@@ -211,7 +211,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                   type="date"
                   value={protocolStartDate}
                   onChange={(e) => setProtocolStartDate(e.target.value)}
-                  className="rounded-md border bg-background px-3 py-2"
+                  className="rounded-[14px] border border-border-subtle bg-bg-card px-3 py-2 text-text-primary"
                 />
               </div>
             )}
@@ -225,10 +225,10 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 3 — Supplements */}
         {actualStep === 3 && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-xl font-semibold">Vilka tillskott tar du?</h2>
+            <h2 className="text-section">Vilka tillskott tar du?</h2>
             <div className="flex flex-col gap-4">
               {usesMicrodosing && (
-                <label className="flex items-center justify-between rounded-xl border bg-card p-4">
+                <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
                   <span className="font-medium">Psilocybin</span>
                   <Switch
                     checked={enabledSupplements.includes('psilocybin')}
@@ -236,21 +236,21 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                   />
                 </label>
               )}
-              <label className="flex items-center justify-between rounded-xl border bg-card p-4">
+              <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
                 <span className="font-medium">Niacin B3</span>
                 <Switch
                   checked={enabledSupplements.includes('niacin')}
                   onCheckedChange={() => toggleSupplement('niacin')}
                 />
               </label>
-              <label className="flex items-center justify-between rounded-xl border bg-card p-4">
+              <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
                 <span className="font-medium">Lion's Mane</span>
                 <Switch
                   checked={enabledSupplements.includes('lions_mane')}
                   onCheckedChange={() => toggleSupplement('lions_mane')}
                 />
               </label>
-              <label className="flex items-center justify-between rounded-xl border bg-card p-4">
+              <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
                 <span className="font-medium">Morgonmedicin</span>
                 <Switch
                   checked={enabledSupplements.includes('morning_meds')}
@@ -268,8 +268,8 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {actualStep === 4 && (
           <div className="flex flex-1 flex-col gap-6">
             <div>
-              <h2 className="text-xl font-semibold">Vad tränar du gärna?</h2>
-              <p className="text-sm text-muted-foreground">Välj minst en aktivitet att följa upp varje kväll.</p>
+              <h2 className="text-section">Vad tränar du gärna?</h2>
+              <p className="text-meta text-text-secondary">Välj minst en aktivitet att följa upp varje kväll.</p>
             </div>
             <div className="flex flex-col gap-6">
               {(['attention_memory', 'logic_problem_solving', 'fine_motor_focus', 'physical'] as ActivityCategory[]).map((cat) => {
@@ -277,10 +277,10 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 if (!items?.length) return null
                 return (
                   <div key={cat}>
-                    <h3 className="mb-2 text-sm font-medium text-muted-foreground">{categoryLabels[cat]}</h3>
+                    <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">{categoryLabels[cat]}</h3>
                     <div className="flex flex-col gap-2">
                       {items.map((a) => (
-                        <label key={a.id} className="flex items-center justify-between rounded-xl border bg-card p-3">
+                        <label key={a.id} className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-3">
                           <div>
                             <span className="font-medium">{a.name}</span>
                             {a.description && (
@@ -312,8 +312,8 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 5 — Done */}
         {actualStep === 5 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-            <h2 className="text-2xl font-semibold">Du är redo.</h2>
-            <p className="text-muted-foreground">Appen är nu kalibrerad för dig.</p>
+            <h2 className="text-title">Du är redo.</h2>
+            <p className="text-body text-text-secondary">Appen är nu kalibrerad för dig.</p>
             <Button
               size="lg"
               className="h-14 w-full text-lg"
@@ -329,7 +329,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
       {/* Back link */}
       {step > 1 && (
         <button
-          className="mt-6 text-center text-sm text-muted-foreground underline"
+          className="mt-6 text-center text-body text-accent-blue"
           onClick={back}
         >
           Tillbaka
