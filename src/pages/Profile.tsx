@@ -19,11 +19,10 @@ const supplementLabels: Record<string, string> = {
 
 interface ProfileProps {
   profile: UserProfile
-  onProfileUpdate: (profile: UserProfile) => void
   onEditSettings: () => void
 }
 
-export function Profile({ profile, onProfileUpdate, onEditSettings }: ProfileProps) {
+export function Profile({ profile, onEditSettings }: ProfileProps) {
   const { signOut, user } = useAuth()
   const [activityNames, setActivityNames] = useState<string[]>([])
 

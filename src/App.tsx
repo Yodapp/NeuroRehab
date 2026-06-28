@@ -81,7 +81,6 @@ function AppContent() {
             element={
               <Profile
                 profile={profile}
-                onProfileUpdate={(p) => setProfile(p)}
                 onEditSettings={() => setEditingSettings(true)}
               />
             }
