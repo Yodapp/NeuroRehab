@@ -130,7 +130,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
   }, {})
 
   return (
-    <div className="flex min-h-dvh flex-col bg-bg-primary px-5 py-6">
+    <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg-primary px-5 py-6">
       {/* Progress */}
       <div className="mb-8">
         <p className="text-meta text-text-secondary">Steg {step} av {totalSteps}</p>
