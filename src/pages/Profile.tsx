@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { OnboardingWizard } from '@/components/OnboardingWizard'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { UserProfile } from '@/types'
@@ -21,11 +20,11 @@ const supplementLabels: Record<string, string> = {
 interface ProfileProps {
   profile: UserProfile
   onProfileUpdate: (profile: UserProfile) => void
+  onEditSettings: () => void
 }
 
-export function Profile({ profile, onProfileUpdate }: ProfileProps) {
+export function Profile({ profile, onProfileUpdate, onEditSettings }: ProfileProps) {
   const { signOut, user } = useAuth()
-  const [showWizard, setShowWizard] = useState(false)
   const [activityNames, setActivityNames] = useState<string[]>([])
 
   useEffect(() => {
@@ -40,24 +39,7 @@ export function Profile({ profile, onProfileUpdate }: ProfileProps) {
           setActivityNames(data.map((r: any) => r.activities?.name).filter(Boolean))
         }
       })
-  }, [user, showWizard])
-
-  if (showWizard) {
-    return (
-      <OnboardingWizard
-        initialValues={profile}
-        onComplete={async () => {
-          const { data } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', profile.id)
-            .single()
-          if (data) onProfileUpdate(data)
-          setShowWizard(false)
-        }}
-      />
-    )
-  }
+  }, [user])
 
   const supplementsList = profile.enabled_supplements
     .map((s) => supplementLabels[s] || s)
@@ -98,7 +80,7 @@ export function Profile({ profile, onProfileUpdate }: ProfileProps) {
       <Button
         variant="outline"
         className="min-h-[50px] rounded-[14px] text-button text-accent-blue border-border-subtle"
-        onClick={() => setShowWizard(true)}
+        onClick={onEditSettings}
       >
         Ändra inställningar
       </Button>

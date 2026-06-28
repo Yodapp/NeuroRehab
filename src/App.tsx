@@ -15,6 +15,7 @@ function AppContent() {
   const { user, loading } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [profileLoading, setProfileLoading] = useState(true)
+  const [editingSettings, setEditingSettings] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -52,6 +53,23 @@ function AppContent() {
     )
   }
 
+  if (editingSettings) {
+    return (
+      <OnboardingWizard
+        initialValues={profile}
+        onComplete={async () => {
+          const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+          if (data) setProfile(data)
+          setEditingSettings(false)
+        }}
+      />
+    )
+  }
+
   return (
     <div className="min-h-dvh bg-bg-primary text-text-primary">
       <main className="pb-[100px]">
@@ -64,6 +82,7 @@ function AppContent() {
               <Profile
                 profile={profile}
                 onProfileUpdate={(p) => setProfile(p)}
+                onEditSettings={() => setEditingSettings(true)}
               />
             }
           />
