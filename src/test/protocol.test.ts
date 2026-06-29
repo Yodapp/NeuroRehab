@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { getTodayPhase, getPhaseLabel } from '../lib/protocol'
+import { getTodayPhase } from '../lib/protocol'
 
 afterEach(() => {
   vi.useRealTimers()
