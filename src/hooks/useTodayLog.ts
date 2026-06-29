@@ -15,6 +15,7 @@ export interface UseTodayLogResult {
   toggleSupplement: (field: keyof DailyLog, value: boolean) => Promise<void>
 }
 
+// TODO: extract daily log state into a shared DailyLogContext to avoid race condition with useEveningLog on first write
 export function useTodayLog(): UseTodayLogResult {
   const { user } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)

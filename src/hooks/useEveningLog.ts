@@ -16,6 +16,7 @@ export interface UseEveningLogResult {
   updateRating: (field: 'energy_rating' | 'focus_rating' | 'symptom_rating', value: number) => Promise<void>
 }
 
+// TODO: extract daily log state into a shared DailyLogContext to avoid race condition with useTodayLog on first write
 export function useEveningLog(): UseEveningLogResult {
   const { user } = useAuth()
   const [activities, setActivities] = useState<ActivityWithStatus[]>([])
@@ -83,6 +84,12 @@ export function useEveningLog(): UseEveningLogResult {
 
     fetchData()
   }, [user])
+
+  useEffect(() => {
+    return () => {
+      for (const t of Object.values(debounceTimers.current)) clearTimeout(t)
+    }
+  }, [])
 
   const toggleActivity = useCallback(
     async (activityId: string, completed: boolean) => {
