@@ -1,8 +1,11 @@
+import { CycleSummary } from '@/components/CycleSummary'
 import { EveningLog } from '@/components/EveningLog'
 import { MorningChecklist } from '@/components/MorningChecklist'
 import { ProtocolBadge } from '@/components/ProtocolBadge'
+import { WeekStrip } from '@/components/WeekStrip'
 import { useEveningLog } from '@/hooks/useEveningLog'
 import { useTodayLog } from '@/hooks/useTodayLog'
+import { useWeekData } from '@/hooks/useWeekData'
 
 const formattedDate = new Intl.DateTimeFormat('sv-SE', {
   weekday: 'long',
@@ -13,6 +16,7 @@ const formattedDate = new Intl.DateTimeFormat('sv-SE', {
 export function Today() {
   const todayLog = useTodayLog()
   const eveningLog = useEveningLog()
+  const { days } = useWeekData()
 
   if (todayLog.loading || eveningLog.loading) {
     return (
@@ -30,6 +34,8 @@ export function Today() {
       </div>
 
       <ProtocolBadge phase={todayLog.phase} label={todayLog.phaseLabel} />
+
+      {days.length > 0 && <WeekStrip days={days} />}
 
       <section>
         <h2 className="text-section mb-3">Dagens stack</h2>
@@ -54,6 +60,8 @@ export function Today() {
           onUpdateRating={eveningLog.updateRating}
         />
       </section>
+
+      {days.length > 0 && <CycleSummary days={days} />}
     </div>
   )
 }

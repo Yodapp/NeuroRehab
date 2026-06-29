@@ -2,8 +2,7 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import { defineConfig } from 'vite'
-import type { UserConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -32,4 +31,4 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.ts',
   },
-} as UserConfig)
+})
