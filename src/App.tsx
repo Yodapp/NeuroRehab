@@ -48,7 +48,11 @@ function AppContent() {
   if (!profile?.onboarding_completed) {
     return (
       <OnboardingWizard
-        onComplete={() => setProfile((p) => (p ? { ...p, onboarding_completed: true } : p))}
+        onComplete={async () => {
+          const { data } = await supabase
+            .from('profiles').select('*').eq('id', user.id).single()
+          if (data) setProfile(data)
+        }}
       />
     )
   }
