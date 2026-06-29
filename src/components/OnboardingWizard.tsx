@@ -10,6 +10,12 @@ interface OnboardingWizardProps {
   initialValues?: Partial<UserProfile>
 }
 
+const PROTOCOL_PRESETS = [
+  { label: '4 på, 3 av', type: 'stamets_4_3' as ProtocolType, daysOn: 4, daysOff: 3 },
+  { label: '5 på, 2 av', type: 'onward_5_2' as ProtocolType, daysOn: 5, daysOff: 2 },
+  { label: 'Ingen rytm', type: 'none' as ProtocolType, daysOn: 0, daysOff: 0 },
+]
+
 const categoryLabels: Record<string, string> = {
   attention_memory: 'Uppmärksamhet & Minne',
   logic_problem_solving: 'Logik & Problemlösning',
@@ -28,6 +34,16 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
   )
   const [protocolStartDate, setProtocolStartDate] = useState(
     initialValues?.protocol_start_date ?? ''
+  )
+  const [selectedDaysOn, setSelectedDaysOn] = useState(
+    initialValues?.protocol_type === 'stamets_4_3' ? 4
+      : initialValues?.protocol_type === 'onward_5_2' ? 5
+      : 0
+  )
+  const [selectedDaysOff, setSelectedDaysOff] = useState(
+    initialValues?.protocol_type === 'stamets_4_3' ? 3
+      : initialValues?.protocol_type === 'onward_5_2' ? 2
+      : 0
   )
   const [enabledSupplements, setEnabledSupplements] = useState<string[]>(
     initialValues?.enabled_supplements ?? ['lions_mane', 'morning_meds']
@@ -89,6 +105,12 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
     setSelectedActivityIds((prev) =>
       prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
     )
+  }
+
+  function selectPreset(preset: typeof PROTOCOL_PRESETS[number]) {
+    setProtocolType(preset.type)
+    setSelectedDaysOn(preset.daysOn)
+    setSelectedDaysOff(preset.daysOff)
   }
 
   async function handleComplete() {
@@ -184,23 +206,42 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {actualStep === 2 && usesMicrodosing && (
           <div className="flex flex-1 flex-col gap-6">
             <h2 className="text-section">Vilket upplägg följer du?</h2>
-            <div className="flex flex-col gap-3">
-              {([
-                ['stamets_4_3', 'Stamets 4:3'],
-                ['onward_5_2', 'Experience Onward 5:2'],
-                ['none', 'Ingen fast rytm'],
-              ] as [ProtocolType, string][]).map(([type, label]) => (
-                <Button
-                  key={type}
-                  size="lg"
-                  variant="outline"
-                  className={`h-14 text-button ${protocolType === type ? 'border-2 border-accent-green bg-[rgba(48,209,88,0.1)]' : 'border-border-subtle bg-bg-card'}`}
-                  onClick={() => setProtocolType(type)}
+
+            <div className="flex gap-2 flex-wrap">
+              {PROTOCOL_PRESETS.map(preset => (
+                <button
+                  key={preset.type}
+                  onClick={() => selectPreset(preset)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-all
+                    ${protocolType === preset.type
+                      ? 'bg-accent-green/20 border-accent-green text-accent-green'
+                      : 'bg-bg-card border-border-subtle text-text-secondary'
+                    }`}
                 >
-                  {label}
-                </Button>
+                  {preset.label}
+                </button>
               ))}
             </div>
+
+            {protocolType !== 'none' && selectedDaysOn > 0 && (
+              <div className="mt-4 p-3 bg-bg-card rounded-xl flex gap-6">
+                <div className="flex gap-1">
+                  {Array.from({ length: selectedDaysOn }).map((_, i) => (
+                    <div key={i} className="w-3 h-3 rounded-full bg-accent-green" />
+                  ))}
+                  {Array.from({ length: selectedDaysOff }).map((_, i) => (
+                    <div key={i} className="w-3 h-3 rounded-full bg-bg-inactive" />
+                  ))}
+                </div>
+                <div className="text-sm text-text-secondary">
+                  <span className="text-text-primary font-medium">
+                    {selectedDaysOn + selectedDaysOff} dagars cykel
+                  </span>
+                  {' · '}
+                  ~{Math.round(30 / (selectedDaysOn + selectedDaysOff) * selectedDaysOn)} doser/månad
+                </div>
+              </div>
+            )}
 
             {protocolType !== 'none' && (
               <div className="flex flex-col gap-2">
