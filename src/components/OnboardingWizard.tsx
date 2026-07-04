@@ -20,6 +20,7 @@ const categoryLabels: Record<string, string> = {
   logic_problem_solving: 'Logic & Problem Solving',
   fine_motor_focus: 'Fine Motor & Focus',
   physical: 'Physical',
+  mind_body: 'Mind & Presence',
 }
 
 export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizardProps) {
@@ -320,7 +321,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
               <p className="text-meta text-text-secondary">Select at least one activity to track every evening.</p>
             </div>
             <div className="flex flex-col gap-6">
-              {(['attention_memory', 'logic_problem_solving', 'fine_motor_focus', 'physical'] as ActivityCategory[]).map((cat) => {
+              {(['attention_memory', 'logic_problem_solving', 'fine_motor_focus', 'physical', 'mind_body'] as ActivityCategory[]).map((cat) => {
                 const items = grouped[cat]
                 if (!items?.length) return null
                 return (
