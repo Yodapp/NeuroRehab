@@ -94,18 +94,25 @@ create policy "Users can only access their own activity logs"
   on activity_logs for all
   using (daily_log_id in (select id from daily_logs where user_id = auth.uid()));
 
+alter table activities enable row level security;
+
+create policy "Activities are readable by everyone"
+  on activities for select
+  to anon, authenticated
+  using (true);
+
 -- Seed: default activities
 insert into activities (name, categories, description, external_url, is_default) values
-  ('BrainHQ',             array['attention_memory'],                           'Tränar kognitiv flexibilitet',      'https://www.brainhq.com', false),
-  ('Lumosity',            array['attention_memory'],                           'Tränar kognitiv yelhet',            'https://www.lumosity.com', false),
-  ('Dual N-Back',         array['attention_memory'],                           'Tränar arbetsminne',                'https://brainscale.net', false),
-  ('Sudoku',              array['logic_problem_solving'],                      'Tränar logiskt tänkande',           null, false),
-  ('Crossword Puzzles',   array['logic_problem_solving'],                      'Tränar ordförråd och minne',        null, false),
-  ('Brain Teaser Mag.',   array['logic_problem_solving'],                      'Tränar problemlösning',             null, false),
-  ('Lego Building',       array['fine_motor_focus', 'logic_problem_solving'],  'Tränar finmotorik och koncentration', null, false),
-  ('Jigsaw Puzzles',      array['fine_motor_focus', 'attention_memory'],       'Tränar spatial förmåga',            null, false),
-  ('Casual Video Games',  array['fine_motor_focus', 'attention_memory'],       'Tränar reaktion och koordination',  null, false),
-  ('Promenad',            array['physical'],                                   'Stödjer neuroplasticitet',          null, false),
+  ('BrainHQ',             array['attention_memory'],                           'Trains cognitive flexibility',      'https://www.brainhq.com', false),
+  ('Lumosity',            array['attention_memory'],                           'Trains cognitive speed',            'https://www.lumosity.com', false),
+  ('Dual N-Back',         array['attention_memory'],                           'Trains working memory',             'https://brainscale.net', false),
+  ('Sudoku',              array['logic_problem_solving'],                      'Trains logical thinking',           null, false),
+  ('Crossword Puzzles',   array['logic_problem_solving'],                      'Trains vocabulary and memory',      null, false),
+  ('Brain Teaser Mag.',   array['logic_problem_solving'],                      'Trains problem solving',            null, false),
+  ('Lego Building',       array['fine_motor_focus', 'logic_problem_solving'],  'Trains fine motor skills and concentration', null, false),
+  ('Jigsaw Puzzles',      array['fine_motor_focus', 'attention_memory'],       'Trains spatial ability',            null, false),
+  ('Casual Video Games',  array['fine_motor_focus', 'attention_memory'],       'Trains reaction and coordination',  null, false),
+  ('Walking',             array['physical'],                                   'Supports neuroplasticity',          null, false),
   ('Cardio',              array['physical'],                                   'Running, cycling, or anything that gets your heart rate up', null, false),
   ('Strength',            array['physical'],                                   'Resistance or weight training',     null, false),
   ('Stretching/Yoga',     array['physical'],                                   'Gentle mobility and flexibility work', null, false),
@@ -136,3 +143,17 @@ insert into activities (name, categories, description, external_url, is_default)
   ('Cardio',             array['physical'],  'Running, cycling, or anything that gets your heart rate up', null, false),
   ('Strength',           array['physical'],  'Resistance or weight training', null, false),
   ('Stretching/Yoga',    array['physical'],  'Gentle mobility and flexibility work', null, false);
+
+-- Migration: translate remaining Swedish activity name/descriptions on an
+-- already-seeded database (fresh installs get correct English text from the
+-- seed block above already; activities RLS is likewise already enabled above)
+update activities set name = 'Walking', description = 'Supports neuroplasticity' where name = 'Promenad';
+update activities set description = 'Trains cognitive flexibility'        where name = 'BrainHQ';
+update activities set description = 'Trains cognitive speed'              where name = 'Lumosity';
+update activities set description = 'Trains working memory'               where name = 'Dual N-Back';
+update activities set description = 'Trains logical thinking'             where name = 'Sudoku';
+update activities set description = 'Trains vocabulary and memory'        where name = 'Crossword Puzzles';
+update activities set description = 'Trains problem solving'              where name = 'Brain Teaser Mag.';
+update activities set description = 'Trains fine motor skills and concentration' where name = 'Lego Building';
+update activities set description = 'Trains spatial ability'              where name = 'Jigsaw Puzzles';
+update activities set description = 'Trains reaction and coordination'    where name = 'Casual Video Games';

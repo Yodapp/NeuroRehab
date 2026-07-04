@@ -38,28 +38,9 @@ export function useEveningLog(): UseEveningLogResult {
         .eq('user_id', user!.id)
         .eq('is_enabled', true)
 
-      let activityList: Activity[]
-
-      if (userActivities && userActivities.length > 0) {
-        activityList = userActivities.map((ua: any) => ua.activities as Activity)
-      } else {
-        // Seed defaults
-        const { data: defaults } = await supabase
-          .from('activities')
-          .select('*')
-          .eq('is_default', true)
-
-        activityList = defaults ?? []
-
-        if (activityList.length > 0) {
-          const rows = activityList.map((a) => ({
-            user_id: user!.id,
-            activity_id: a.id,
-            is_enabled: true,
-          }))
-          await supabase.from('user_activities').insert(rows)
-        }
-      }
+      const activityList: Activity[] = userActivities
+        ? userActivities.map((ua: any) => ua.activities as Activity)
+        : []
 
       // Fetch activity logs for today
       let completedIds: Set<string> = new Set()

@@ -218,7 +218,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 <button
                   key={preset.type}
                   onClick={() => selectPreset(preset)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium border transition-all
+                  className={`min-h-11 px-4 py-2 rounded-full text-sm font-medium border transition-all
                     ${protocolType === preset.type
                       ? 'bg-accent-green/20 border-accent-green text-accent-green'
                       : 'bg-bg-card border-border-subtle text-text-secondary'
@@ -381,7 +381,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
       {/* Back link */}
       {step > 1 && (
         <button
-          className="mt-6 text-center text-body text-accent-blue"
+          className="mt-6 flex min-h-11 items-center justify-center text-center text-body text-accent-blue"
           onClick={back}
         >
           Back

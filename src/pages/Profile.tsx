@@ -114,9 +114,8 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
           className="w-full resize-none rounded-[14px] border border-border-subtle bg-bg-inactive px-3 py-2 text-body text-text-primary placeholder:text-text-disabled"
         />
         <Button
-          size="sm"
           variant="outline"
-          className="self-end rounded-[14px] text-button text-accent-blue border-border-subtle"
+          className="min-h-11 self-end rounded-[14px] text-button text-accent-blue border-border-subtle"
           onClick={handleSaveIntention}
           disabled={savingIntention || !intentionChanged}
         >
@@ -129,7 +128,7 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
         <div className="flex gap-2">
           <button
             onClick={() => handleThemeChange('dark')}
-            className={`flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+            className={`min-h-11 flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
               theme === 'dark'
                 ? 'border-accent-green bg-accent-green/20 text-accent-green'
                 : 'border-border-subtle bg-bg-inactive text-text-secondary'
@@ -139,7 +138,7 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
           </button>
           <button
             onClick={() => handleThemeChange('light')}
-            className={`flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+            className={`min-h-11 flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
               theme === 'light'
                 ? 'border-accent-green bg-accent-green/20 text-accent-green'
                 : 'border-border-subtle bg-bg-inactive text-text-secondary'
