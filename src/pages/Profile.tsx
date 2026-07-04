@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
+import { applyTheme, getStoredTheme, type ThemeName } from '@/lib/theme'
 import type { UserProfile } from '@/types'
 
 const protocolLabels: Record<string, string> = {
@@ -28,6 +29,12 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
   const [intention, setIntention] = useState(profile.intention ?? '')
   const [savingIntention, setSavingIntention] = useState(false)
   const [savedIntention, setSavedIntention] = useState(false)
+  const [theme, setThemeState] = useState<ThemeName>(getStoredTheme())
+
+  function handleThemeChange(next: ThemeName) {
+    applyTheme(next)
+    setThemeState(next)
+  }
 
   useEffect(() => {
     if (!user) return
@@ -115,6 +122,32 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
         >
           {savedIntention ? 'Saved' : 'Save'}
         </Button>
+      </div>
+
+      <div className="flex flex-col gap-3 rounded-[14px] border border-border-subtle bg-bg-card p-4">
+        <p className="text-meta text-text-secondary">Appearance</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleThemeChange('dark')}
+            className={`flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+              theme === 'dark'
+                ? 'border-accent-green bg-accent-green/20 text-accent-green'
+                : 'border-border-subtle bg-bg-inactive text-text-secondary'
+            }`}
+          >
+            EO Night
+          </button>
+          <button
+            onClick={() => handleThemeChange('light')}
+            className={`flex-1 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+              theme === 'light'
+                ? 'border-accent-green bg-accent-green/20 text-accent-green'
+                : 'border-border-subtle bg-bg-inactive text-text-secondary'
+            }`}
+          >
+            EO Day
+          </button>
+        </div>
       </div>
 
       <p className="text-xs text-text-secondary">
