@@ -4,9 +4,9 @@ import { NavLink } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
 const tabs = [
-  { to: '/', label: 'Idag', icon: Sun, end: true },
-  { to: '/week', label: 'Vecka', icon: BarChart2, end: false },
-  { to: '/profile', label: 'Profil', icon: User, end: false },
+  { to: '/', label: 'Today', icon: Sun, end: true },
+  { to: '/week', label: 'Week', icon: BarChart2, end: false },
+  { to: '/profile', label: 'Profile', icon: User, end: false },
 ] as const
 
 export function BottomNav() {

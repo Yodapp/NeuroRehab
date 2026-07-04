@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { DaySummary } from '@/hooks/useWeekData'
 
-const dayNames = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön']
+const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 interface WeeklyOverviewProps {
   days: DaySummary[]
@@ -93,7 +93,7 @@ export function WeeklyOverview({
           >
             <span className="text-meta font-medium">{dayNames[i]}</span>
             {day.phase === 'rest' ? (
-              <span className="text-meta text-text-secondary">Vila</span>
+              <span className="text-meta text-text-secondary">Rest</span>
             ) : (
               <>
                 <DotRow filled={day.stacksCount} max={4} />
@@ -106,7 +106,7 @@ export function WeeklyOverview({
 
       <div className="flex flex-col gap-4 rounded-[14px] border border-border-subtle bg-bg-card p-4">
         <div className="flex items-center justify-between">
-          <span className="text-body text-text-secondary">Kognitiv Klarhet</span>
+          <span className="text-body text-text-secondary">Cognitive Clarity</span>
           <div className="flex items-center gap-3">
             <Sparkline data={days.map((d) => d.focusRating)} />
             <span className="text-title w-10 text-right">
@@ -115,7 +115,7 @@ export function WeeklyOverview({
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-body text-text-secondary">Energi</span>
+          <span className="text-body text-text-secondary">Energy</span>
           <div className="flex items-center gap-3">
             <Sparkline data={days.map((d) => d.energyRating)} />
             <span className="text-title w-10 text-right">

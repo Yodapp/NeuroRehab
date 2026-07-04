@@ -25,7 +25,7 @@ export function Login() {
       if (err) {
         setError(err.message)
       } else {
-        setMessage('Kolla din e-post för att bekräfta kontot')
+        setMessage('Check your email to confirm your account')
       }
     } else {
       const err = await signIn(email, password)
@@ -42,13 +42,13 @@ export function Login() {
       <Card className="w-full max-w-sm rounded-[14px] border-border-subtle bg-bg-card">
         <CardHeader>
           <CardTitle className="text-section text-text-primary">
-            {isSignUp ? 'Skapa konto' : 'Logga in'}
+            {isSignUp ? 'Create Account' : 'Log In'}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-text-secondary">E-post</Label>
+              <Label htmlFor="email" className="text-text-secondary">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -59,7 +59,7 @@ export function Login() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-text-secondary">Lösenord</Label>
+              <Label htmlFor="password" className="text-text-secondary">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -78,7 +78,7 @@ export function Login() {
               className="min-h-[50px] w-full rounded-[14px] bg-accent-blue text-button text-white"
               disabled={submitting}
             >
-              {isSignUp ? 'Skapa konto' : 'Logga in'}
+              {isSignUp ? 'Create Account' : 'Log In'}
             </Button>
 
             <button
@@ -90,7 +90,7 @@ export function Login() {
                 setMessage(null)
               }}
             >
-              {isSignUp ? 'Har du redan ett konto? Logga in' : 'Inget konto? Skapa konto'}
+              {isSignUp ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
             </button>
           </form>
         </CardContent>

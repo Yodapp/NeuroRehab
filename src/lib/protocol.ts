@@ -44,12 +44,12 @@ export function getPhaseLabel(
   const offset = ((calcDayOffset(protocolStartDate) % 7) + 7) % 7
 
   if (protocolType === 'stamets_4_3') {
-    if (offset < 4) return `Aktiv protokollfas – dag ${offset + 1} av 4`
-    return `Återhämtningsfas – dag ${offset - 3} av 3`
+    if (offset < 4) return `Active protocol phase – day ${offset + 1} of 4`
+    return `Recovery phase – day ${offset - 3} of 3`
   }
   if (protocolType === 'onward_5_2') {
-    if (offset < 5) return `Aktiv protokollfas – dag ${offset + 1} av 5`
-    return `Återhämtningsfas – dag ${offset - 4} av 2`
+    if (offset < 5) return `Active protocol phase – day ${offset + 1} of 5`
+    return `Recovery phase – day ${offset - 4} of 2`
   }
   return ''
 }

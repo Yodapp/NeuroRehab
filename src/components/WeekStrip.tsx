@@ -4,7 +4,7 @@ interface WeekStripProps {
   days: DaySummary[]
 }
 
-const DAY_LABELS = ['M', 'T', 'O', 'T', 'F', 'L', 'S']
+const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export function WeekStrip({ days }: WeekStripProps) {
   const today = new Date()

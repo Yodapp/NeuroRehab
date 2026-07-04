@@ -11,16 +11,16 @@ interface OnboardingWizardProps {
 }
 
 const PROTOCOL_PRESETS = [
-  { label: '4 på, 3 av', type: 'stamets_4_3' as ProtocolType, daysOn: 4, daysOff: 3 },
-  { label: '5 på, 2 av', type: 'onward_5_2' as ProtocolType, daysOn: 5, daysOff: 2 },
-  { label: 'Ingen rytm', type: 'none' as ProtocolType, daysOn: 0, daysOff: 0 },
+  { label: '4 on, 3 off', type: 'stamets_4_3' as ProtocolType, daysOn: 4, daysOff: 3 },
+  { label: '5 on, 2 off', type: 'onward_5_2' as ProtocolType, daysOn: 5, daysOff: 2 },
+  { label: 'No rhythm', type: 'none' as ProtocolType, daysOn: 0, daysOff: 0 },
 ]
 
 const categoryLabels: Record<string, string> = {
-  attention_memory: 'Uppmärksamhet & Minne',
-  logic_problem_solving: 'Logik & Problemlösning',
-  fine_motor_focus: 'Finmotorik & Fokus',
-  physical: 'Fysisk',
+  attention_memory: 'Attention & Memory',
+  logic_problem_solving: 'Logic & Problem Solving',
+  fine_motor_focus: 'Fine Motor & Focus',
+  physical: 'Physical',
 }
 
 export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizardProps) {
@@ -155,7 +155,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
     <div className="flex min-h-dvh flex-col bg-bg-primary px-5 py-6">
       {/* Progress */}
       <div className="mb-8">
-        <p className="text-meta text-text-secondary">Steg {step} av {totalSteps}</p>
+        <p className="text-meta text-text-secondary">Step {step} of {totalSteps}</p>
         <div className="mt-2 h-1 rounded-full bg-bg-inactive">
           <div
             className="h-full rounded-full bg-accent-green transition-base"
@@ -168,7 +168,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 1 — Microdosing */}
         {actualStep === 1 && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-section">Använder du psilocybin i din rehabilitering?</h2>
+            <h2 className="text-section">Do you use psilocybin in your rehabilitation?</h2>
             <div className="flex flex-col gap-3">
               <Button
                 size="lg"
@@ -182,7 +182,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                   next()
                 }}
               >
-                Ja
+                Yes
               </Button>
               <Button
                 size="lg"
@@ -196,7 +196,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                   next()
                 }}
               >
-                Nej
+                No
               </Button>
             </div>
           </div>
@@ -205,7 +205,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 2 — Protocol (only if microdosing) */}
         {actualStep === 2 && usesMicrodosing && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-section">Vilket upplägg följer du?</h2>
+            <h2 className="text-section">Which schedule do you follow?</h2>
 
             <div className="flex gap-2 flex-wrap">
               {PROTOCOL_PRESETS.map(preset => (
@@ -235,10 +235,10 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 </div>
                 <div className="text-sm text-text-secondary">
                   <span className="text-text-primary font-medium">
-                    {selectedDaysOn + selectedDaysOff} dagars cykel
+                    {selectedDaysOn + selectedDaysOff}-day cycle
                   </span>
                   {' · '}
-                  ~{Math.round(30 / (selectedDaysOn + selectedDaysOff) * selectedDaysOn)} doser/månad
+                  ~{Math.round(30 / (selectedDaysOn + selectedDaysOff) * selectedDaysOn)} doses/month
                 </div>
               </div>
             )}
@@ -246,7 +246,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
             {protocolType !== 'none' && (
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">
-                  När startade du ditt nuvarande protokoll?
+                  When did you start your current protocol?
                 </label>
                 <input
                   type="date"
@@ -258,7 +258,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
             )}
 
             <Button size="lg" className="mt-auto h-14 text-lg" onClick={next}>
-              Nästa
+              Next
             </Button>
           </div>
         )}
@@ -266,7 +266,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 3 — Supplements */}
         {actualStep === 3 && (
           <div className="flex flex-1 flex-col gap-6">
-            <h2 className="text-section">Vilka tillskott tar du?</h2>
+            <h2 className="text-section">Which supplements do you take?</h2>
             <div className="flex flex-col gap-4">
               {usesMicrodosing && (
                 <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
@@ -292,7 +292,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 />
               </label>
               <label className="flex items-center justify-between rounded-[14px] border border-border-subtle bg-bg-card p-4">
-                <span className="font-medium">Morgonmedicin</span>
+                <span className="font-medium">Morning Medication</span>
                 <Switch
                   checked={enabledSupplements.includes('morning_meds')}
                   onCheckedChange={() => toggleSupplement('morning_meds')}
@@ -300,7 +300,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
               </label>
             </div>
             <Button size="lg" className="mt-auto h-14 text-lg" onClick={next}>
-              Nästa
+              Next
             </Button>
           </div>
         )}
@@ -309,8 +309,8 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {actualStep === 4 && (
           <div className="flex flex-1 flex-col gap-6">
             <div>
-              <h2 className="text-section">Vad tränar du gärna?</h2>
-              <p className="text-meta text-text-secondary">Välj minst en aktivitet att följa upp varje kväll.</p>
+              <h2 className="text-section">What activities do you enjoy?</h2>
+              <p className="text-meta text-text-secondary">Select at least one activity to track every evening.</p>
             </div>
             <div className="flex flex-col gap-6">
               {(['attention_memory', 'logic_problem_solving', 'fine_motor_focus', 'physical'] as ActivityCategory[]).map((cat) => {
@@ -345,7 +345,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
               onClick={next}
               disabled={selectedActivityIds.length === 0}
             >
-              Nästa
+              Next
             </Button>
           </div>
         )}
@@ -353,15 +353,15 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         {/* Step 5 — Done */}
         {actualStep === 5 && (
           <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-            <h2 className="text-title">Du är redo.</h2>
-            <p className="text-body text-text-secondary">Appen är nu kalibrerad för dig.</p>
+            <h2 className="text-title">You're all set.</h2>
+            <p className="text-body text-text-secondary">The app is now calibrated for you.</p>
             <Button
               size="lg"
               className="h-14 w-full text-lg"
               onClick={handleComplete}
               disabled={saving}
             >
-              Kom igång
+              Get Started
             </Button>
           </div>
         )}
@@ -373,7 +373,7 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
           className="mt-6 text-center text-body text-accent-blue"
           onClick={back}
         >
-          Tillbaka
+          Back
         </button>
       )}
     </div>

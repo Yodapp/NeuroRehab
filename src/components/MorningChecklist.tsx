@@ -20,10 +20,10 @@ const supplements: {
   iconColor: string
   iconBg: string
 }[] = [
-  { field: 'took_psilocybin', label: 'Mikrodos Psilocybin', subtitle: 'Ta din dosering (0.1g)', requires: 'psilocybin', activeOnly: true, icon: Leaf, iconColor: 'text-[#30D158]', iconBg: 'bg-[rgba(48,209,88,0.12)]' },
-  { field: 'took_niacin', label: 'Niacin B3', subtitle: 'Förbättrar blodflöde', requires: 'niacin', activeOnly: true, icon: Zap, iconColor: 'text-[#FFD60A]', iconBg: 'bg-[rgba(255,214,10,0.12)]' },
-  { field: 'took_lions_mane', label: "Lion's Mane", subtitle: 'Stödjer kognition', requires: 'lions_mane', activeOnly: false, icon: Brain, iconColor: 'text-[#BF5AF2]', iconBg: 'bg-[rgba(191,90,242,0.12)]' },
-  { field: 'took_morning_meds', label: 'Morgonmedicin', subtitle: 'Ordinerad medicin', requires: 'morning_meds', activeOnly: false, icon: Pill, iconColor: 'text-[#0A84FF]', iconBg: 'bg-[rgba(10,132,255,0.12)]' },
+  { field: 'took_psilocybin', label: 'Microdose Psilocybin', subtitle: 'Take your dose (0.1g)', requires: 'psilocybin', activeOnly: true, icon: Leaf, iconColor: 'text-[#30D158]', iconBg: 'bg-[rgba(48,209,88,0.12)]' },
+  { field: 'took_niacin', label: 'Niacin B3', subtitle: 'Improves blood flow', requires: 'niacin', activeOnly: true, icon: Zap, iconColor: 'text-[#FFD60A]', iconBg: 'bg-[rgba(255,214,10,0.12)]' },
+  { field: 'took_lions_mane', label: "Lion's Mane", subtitle: 'Supports cognition', requires: 'lions_mane', activeOnly: false, icon: Brain, iconColor: 'text-[#BF5AF2]', iconBg: 'bg-[rgba(191,90,242,0.12)]' },
+  { field: 'took_morning_meds', label: 'Morning Medication', subtitle: 'Prescribed medication', requires: 'morning_meds', activeOnly: false, icon: Pill, iconColor: 'text-[#0A84FF]', iconBg: 'bg-[rgba(10,132,255,0.12)]' },
 ]
 
 export function MorningChecklist({ profile, log, phase, onToggle }: MorningChecklistProps) {
