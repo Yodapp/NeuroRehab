@@ -10,7 +10,7 @@ interface MorningChecklistProps {
   onToggle: (field: keyof DailyLog, value: boolean) => void
 }
 
-const supplements: {
+export const supplementItems: {
   field: keyof DailyLog
   label: string
   subtitle: string
@@ -28,7 +28,7 @@ const supplements: {
 ]
 
 export function MorningChecklist({ profile, log, phase, onToggle }: MorningChecklistProps) {
-  const visible = supplements.filter((s) => {
+  const visible = supplementItems.filter((s) => {
     if (!profile.enabled_supplements.includes(s.requires)) return false
     if (s.activeOnly && phase !== 'active') return false
     return true
