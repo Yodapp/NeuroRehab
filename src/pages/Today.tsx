@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import { CycleSummary } from '@/components/CycleSummary'
 import { EveningLog } from '@/components/EveningLog'
 import { MorningChecklist } from '@/components/MorningChecklist'
@@ -32,6 +34,19 @@ export function Today() {
         <h1 className="text-title">Today</h1>
         <p className="text-meta capitalize text-text-secondary">{formattedDate}</p>
       </div>
+
+      {todayLog.profile?.intention ? (
+        <blockquote className="border-l-2 border-accent-gold pl-4 text-body italic text-accent-gold">
+          "{todayLog.profile.intention}"
+        </blockquote>
+      ) : (
+        <Link
+          to="/profile"
+          className="text-meta text-text-secondary underline decoration-dotted underline-offset-4"
+        >
+          Set an intention for your practice
+        </Link>
+      )}
 
       <ProtocolBadge phase={todayLog.phase} label={todayLog.phaseLabel} />
 
