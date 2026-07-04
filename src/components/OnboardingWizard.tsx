@@ -13,7 +13,6 @@ interface OnboardingWizardProps {
 const PROTOCOL_PRESETS = [
   { label: '4 on, 3 off', type: 'stamets_4_3' as ProtocolType, daysOn: 4, daysOff: 3 },
   { label: '5 on, 2 off', type: 'onward_5_2' as ProtocolType, daysOn: 5, daysOff: 2 },
-  { label: 'No rhythm', type: 'none' as ProtocolType, daysOn: 0, daysOff: 0 },
 ]
 
 const categoryLabels: Record<string, string> = {
@@ -179,6 +178,9 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                   if (!enabledSupplements.includes('psilocybin')) {
                     setEnabledSupplements((s) => [...s, 'psilocybin', 'niacin'].filter((v, i, a) => a.indexOf(v) === i))
                   }
+                  if (protocolType === 'none') {
+                    selectPreset(PROTOCOL_PRESETS[0])
+                  }
                   next()
                 }}
               >
@@ -257,7 +259,12 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
               </div>
             )}
 
-            <Button size="lg" className="mt-auto h-14 text-lg" onClick={next}>
+            <Button
+              size="lg"
+              className="mt-auto h-14 text-lg"
+              onClick={next}
+              disabled={!protocolStartDate}
+            >
               Next
             </Button>
           </div>
