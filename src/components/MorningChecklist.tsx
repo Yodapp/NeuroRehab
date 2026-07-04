@@ -54,7 +54,7 @@ export function MorningChecklist({ profile, log, phase, onToggle }: MorningCheck
             <div className="flex-1">
               <div className="text-body font-medium text-text-primary">{s.label}</div>
               <div className="text-meta text-text-secondary">{s.subtitle}</div>
-              {s.tip && <div className="mt-1 text-xs text-text-disabled">{s.tip}</div>}
+              {s.tip && <div className="mt-1 text-xs text-text-secondary">{s.tip}</div>}
             </div>
             <Checkbox
               checked={checked}

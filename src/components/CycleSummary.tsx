@@ -43,7 +43,7 @@ export function CycleSummary({ days }: CycleSummaryProps) {
             .filter(Boolean)
             .join(' ')}
           fill="none"
-          stroke="#3dd68c"
+          stroke="var(--color-accent-green)"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"

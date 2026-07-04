@@ -3,6 +3,8 @@ import {
   Footprints, Gamepad2, Grid3x3, HeartPulse, Layers, Puzzle, Sparkles,
   Trees, Users, Wind,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import type { ActivityWithStatus } from '@/hooks/useEveningLog'
@@ -44,12 +46,12 @@ const ratingFields = [
 export function EveningLog({ activities, log, onToggleActivity, onUpdateRating }: EveningLogProps) {
   return (
     <div className="flex flex-col gap-8">
-      {activities.length > 0 && (
+      {activities.length > 0 ? (
         <div className="flex flex-col gap-3">
           {activities.map((a) => {
             const Icon = activityIcons[a.name] || Activity
             return (
-              <div
+              <label
                 key={a.id}
                 className={`flex items-center gap-4 rounded-[14px] border bg-bg-card p-4 transition-base ${
                   a.completed ? 'border-accent-green' : 'border-border-subtle'
@@ -73,10 +75,18 @@ export function EveningLog({ activities, log, onToggleActivity, onUpdateRating }
                     {a.completed ? 'Done' : 'Not today'}
                   </span>
                 </div>
-              </div>
+              </label>
             )
           })}
         </div>
+      ) : (
+        <p className="text-meta text-text-secondary">
+          No activities selected yet.{' '}
+          <Link to="/profile" className="text-accent-blue underline decoration-dotted underline-offset-4">
+            Add some in Profile
+          </Link>
+          .
+        </p>
       )}
 
       <div className="rounded-[14px] border border-border-subtle bg-bg-card p-4">
