@@ -14,7 +14,7 @@ export function Week() {
 
   return (
     <div className="flex flex-col gap-6 p-5 pb-32">
-      <h1 className="text-title">Vecka</h1>
+      <h1 className="text-title">Week</h1>
       <WeeklyOverview
         days={days}
         weekLabel={weekLabel}

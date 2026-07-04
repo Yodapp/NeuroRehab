@@ -18,7 +18,7 @@ const activityIcons: Record<string, typeof Activity> = {
   'Programmering': Code2,
   'BrainHQ': Brain,
   'Casual Video Games': Gamepad2,
-  'Promenad': Footprints,
+  'Walking': Footprints,
   'Sudoku': Grid3x3,
   'Crossword Puzzles': BookOpen,
   'Lego Building': Blocks,
@@ -28,9 +28,9 @@ const activityIcons: Record<string, typeof Activity> = {
 }
 
 const ratingFields = [
-  { field: 'energy_rating' as const, label: 'Energinivå' },
-  { field: 'focus_rating' as const, label: 'Fokus/Skärpa' },
-  { field: 'symptom_rating' as const, label: 'Symptom' },
+  { field: 'energy_rating' as const, label: 'Energy Level' },
+  { field: 'focus_rating' as const, label: 'Focus/Sharpness' },
+  { field: 'symptom_rating' as const, label: 'Symptoms' },
 ]
 
 export function EveningLog({ activities, log, onToggleActivity, onUpdateRating }: EveningLogProps) {
@@ -62,7 +62,7 @@ export function EveningLog({ activities, log, onToggleActivity, onUpdateRating }
                     onCheckedChange={(v) => onToggleActivity(a.id, v)}
                   />
                   <span className={`text-meta font-medium ${a.completed ? 'text-accent-green' : 'text-text-secondary'}`}>
-                    {a.completed ? 'Klar' : 'Inte idag'}
+                    {a.completed ? 'Done' : 'Not today'}
                   </span>
                 </div>
               </div>

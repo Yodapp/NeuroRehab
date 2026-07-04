@@ -51,14 +51,14 @@ function formatWeekLabel(monday: Date): string {
   const startDay = startOfYear.getDay() || 7
   const weekNum = Math.ceil((dayOfYear + startDay) / 7)
 
-  const monthFmt = new Intl.DateTimeFormat('sv-SE', { month: 'short' })
+  const monthFmt = new Intl.DateTimeFormat('en-GB', { month: 'short' })
   const startMonth = monthFmt.format(monday)
   const endMonth = monthFmt.format(sunday)
   const monthPart = startMonth === endMonth
     ? `${startMonth} ${monday.getDate()}–${sunday.getDate()}`
     : `${startMonth} ${monday.getDate()} – ${endMonth} ${sunday.getDate()}`
 
-  return `Vecka ${weekNum}, ${monthPart}`
+  return `Week ${weekNum}, ${monthPart}`
 }
 
 export function useWeekData(): UseWeekDataResult {

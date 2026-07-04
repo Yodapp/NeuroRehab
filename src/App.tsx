@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 
 import { BottomNav } from '@/components/BottomNav'
 import { OnboardingWizard } from '@/components/OnboardingWizard'
@@ -101,6 +102,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppContent />
+        <Analytics />
       </AuthProvider>
     </BrowserRouter>
   )

@@ -7,7 +7,7 @@ import { useEveningLog } from '@/hooks/useEveningLog'
 import { useTodayLog } from '@/hooks/useTodayLog'
 import { useWeekData } from '@/hooks/useWeekData'
 
-const formattedDate = new Intl.DateTimeFormat('sv-SE', {
+const formattedDate = new Intl.DateTimeFormat('en-GB', {
   weekday: 'long',
   day: 'numeric',
   month: 'long',
@@ -29,7 +29,7 @@ export function Today() {
   return (
     <div className="flex flex-col gap-8 overflow-y-auto p-5 pb-32">
       <div>
-        <h1 className="text-title">Idag</h1>
+        <h1 className="text-title">Today</h1>
         <p className="text-meta capitalize text-text-secondary">{formattedDate}</p>
       </div>
 
@@ -38,7 +38,7 @@ export function Today() {
       {days.length > 0 && <WeekStrip days={days} />}
 
       <section>
-        <h2 className="text-section mb-3">Dagens stack</h2>
+        <h2 className="text-section mb-3">Today's Stack</h2>
         {todayLog.profile && (
           <MorningChecklist
             profile={todayLog.profile}
@@ -52,7 +52,7 @@ export function Today() {
       <hr className="border-border-subtle" />
 
       <section>
-        <h2 className="text-section mb-3">Kvällslogg</h2>
+        <h2 className="text-section mb-3">Evening Log</h2>
         <EveningLog
           activities={eveningLog.activities}
           log={eveningLog.log}

@@ -17,22 +17,22 @@ export function CycleSummary({ days }: CycleSummaryProps) {
   return (
     <div className="bg-bg-card rounded-[14px] border border-border-subtle p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-text-secondary uppercase tracking-wider">Veckans sammanfattning</span>
-        <span className="text-xs text-text-secondary">{totalDays}/7 dagar loggade</span>
+        <span className="text-xs text-text-secondary uppercase tracking-wider">Weekly Summary</span>
+        <span className="text-xs text-text-secondary">{totalDays}/7 days logged</span>
       </div>
 
       <div className="flex gap-4">
         <div>
           <p className="text-2xl font-bold text-text-primary">{avgEnergy}</p>
-          <p className="text-xs text-text-secondary">Snitt energi</p>
+          <p className="text-xs text-text-secondary">Avg energy</p>
         </div>
         <div>
           <p className="text-2xl font-bold text-text-primary">{avgFocus}</p>
-          <p className="text-xs text-text-secondary">Snitt fokus</p>
+          <p className="text-xs text-text-secondary">Avg focus</p>
         </div>
         <div>
           <p className="text-2xl font-bold text-accent-green">{activeDays}</p>
-          <p className="text-xs text-text-secondary">Aktiva dosdagar</p>
+          <p className="text-xs text-text-secondary">Active dose days</p>
         </div>
       </div>
 
