@@ -117,6 +117,10 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
         </Button>
       </div>
 
+      <p className="text-xs text-text-secondary">
+        Microdosing is not a replacement for professional mental health support. Consult a licensed healthcare provider before beginning, especially if you take psychiatric medications or have underlying health conditions.
+      </p>
+
       <Button
         variant="outline"
         className="min-h-[50px] rounded-[14px] text-button text-accent-blue border-border-subtle"

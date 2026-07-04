@@ -202,6 +202,9 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
                 No
               </Button>
             </div>
+            <p className="rounded-[14px] border border-border-subtle p-3 text-xs text-text-secondary">
+              Microdosing is not a replacement for professional mental health support. Consult a licensed healthcare provider before beginning, especially if you take psychiatric medications or have underlying health conditions.
+            </p>
           </div>
         )}
 
