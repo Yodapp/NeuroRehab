@@ -96,17 +96,43 @@ create policy "Users can only access their own activity logs"
 
 -- Seed: default activities
 insert into activities (name, categories, description, external_url, is_default) values
-  ('BrainHQ',             array['attention_memory'],                           'Tränar kognitiv flexibilitet',      'https://www.brainhq.com', true),
-  ('Lumosity',            array['attention_memory'],                           'Tränar kognitiv yelhet',            'https://www.lumosity.com', true),
-  ('Dual N-Back',         array['attention_memory'],                           'Tränar arbetsminne',                'https://brainscale.net', true),
-  ('Sudoku',              array['logic_problem_solving'],                      'Tränar logiskt tänkande',           null, true),
-  ('Crossword Puzzles',   array['logic_problem_solving'],                      'Tränar ordförråd och minne',        null, true),
+  ('BrainHQ',             array['attention_memory'],                           'Tränar kognitiv flexibilitet',      'https://www.brainhq.com', false),
+  ('Lumosity',            array['attention_memory'],                           'Tränar kognitiv yelhet',            'https://www.lumosity.com', false),
+  ('Dual N-Back',         array['attention_memory'],                           'Tränar arbetsminne',                'https://brainscale.net', false),
+  ('Sudoku',              array['logic_problem_solving'],                      'Tränar logiskt tänkande',           null, false),
+  ('Crossword Puzzles',   array['logic_problem_solving'],                      'Tränar ordförråd och minne',        null, false),
   ('Brain Teaser Mag.',   array['logic_problem_solving'],                      'Tränar problemlösning',             null, false),
-  ('Lego Building',       array['fine_motor_focus', 'logic_problem_solving'],  'Tränar finmotorik och koncentration', null, true),
-  ('Jigsaw Puzzles',      array['fine_motor_focus', 'attention_memory'],       'Tränar spatial förmåga',            null, true),
-  ('Casual Video Games',  array['fine_motor_focus', 'attention_memory'],       'Tränar reaktion och koordination',  null, true),
-  ('Programmering',       array['logic_problem_solving', 'attention_memory'],  'Tränar problemlösning och fokus',   null, true),
-  ('Promenad',            array['physical'],                                   'Stödjer neuroplasticitet',          null, true);
+  ('Lego Building',       array['fine_motor_focus', 'logic_problem_solving'],  'Tränar finmotorik och koncentration', null, false),
+  ('Jigsaw Puzzles',      array['fine_motor_focus', 'attention_memory'],       'Tränar spatial förmåga',            null, false),
+  ('Casual Video Games',  array['fine_motor_focus', 'attention_memory'],       'Tränar reaktion och koordination',  null, false),
+  ('Promenad',            array['physical'],                                   'Stödjer neuroplasticitet',          null, false),
+  ('Cardio',              array['physical'],                                   'Running, cycling, or anything that gets your heart rate up', null, false),
+  ('Strength',            array['physical'],                                   'Resistance or weight training',     null, false),
+  ('Stretching/Yoga',     array['physical'],                                   'Gentle mobility and flexibility work', null, false),
+  ('Breathwork',          array['mind_body'],                                  'A few minutes of structured breathing', null, false),
+  ('Meditation',          array['mind_body'],                                  'Sit quietly, focus on breath or a mantra', null, false),
+  ('Mindfulness',         array['mind_body'],                                  'Present-moment awareness practice', null, false),
+  ('Social Connection',   array['mind_body'],                                  'Meaningful time with friends or family', null, false),
+  ('Time in Nature',      array['mind_body'],                                  'Spend time outdoors, away from screens', null, false);
 
 -- Migration: add intention (mantra) field to existing profiles table
 alter table profiles add column if not exists intention text;
+
+-- Migration: broaden activity library, remove Programmering, clear all is_default flags
+update activities set is_default = false;
+
+delete from activity_logs
+  where activity_id in (select id from activities where name = 'Programmering');
+delete from user_activities
+  where activity_id in (select id from activities where name = 'Programmering');
+delete from activities where name = 'Programmering';
+
+insert into activities (name, categories, description, external_url, is_default) values
+  ('Breathwork',         array['mind_body'], 'A few minutes of structured breathing', null, false),
+  ('Meditation',         array['mind_body'], 'Sit quietly, focus on breath or a mantra', null, false),
+  ('Mindfulness',        array['mind_body'], 'Present-moment awareness practice', null, false),
+  ('Social Connection',  array['mind_body'], 'Meaningful time with friends or family', null, false),
+  ('Time in Nature',     array['mind_body'], 'Spend time outdoors, away from screens', null, false),
+  ('Cardio',             array['physical'],  'Running, cycling, or anything that gets your heart rate up', null, false),
+  ('Strength',           array['physical'],  'Resistance or weight training', null, false),
+  ('Stretching/Yoga',    array['physical'],  'Gentle mobility and flexibility work', null, false);

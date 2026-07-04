@@ -5,6 +5,7 @@ export type ActivityCategory =
   | 'logic_problem_solving'
   | 'fine_motor_focus'
   | 'physical'
+  | 'mind_body'
 
 export interface UserProfile {
   id: string

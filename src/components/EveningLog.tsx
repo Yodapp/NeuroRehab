@@ -1,6 +1,7 @@
 import {
-  Activity, Blocks, BookOpen, Brain, Code2, Footprints,
-  Gamepad2, Grid3x3, Layers, Puzzle, Sparkles,
+  Activity, Blocks, BookOpen, Brain, Dumbbell, Eye, Flower, Flower2,
+  Footprints, Gamepad2, Grid3x3, HeartPulse, Layers, Puzzle, Sparkles,
+  Trees, Users, Wind,
 } from 'lucide-react'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
@@ -15,7 +16,6 @@ interface EveningLogProps {
 }
 
 const activityIcons: Record<string, typeof Activity> = {
-  'Programmering': Code2,
   'BrainHQ': Brain,
   'Casual Video Games': Gamepad2,
   'Walking': Footprints,
@@ -25,6 +25,14 @@ const activityIcons: Record<string, typeof Activity> = {
   'Jigsaw Puzzles': Puzzle,
   'Lumosity': Sparkles,
   'Dual N-Back': Layers,
+  'Breathwork': Wind,
+  'Meditation': Flower2,
+  'Mindfulness': Eye,
+  'Social Connection': Users,
+  'Time in Nature': Trees,
+  'Cardio': HeartPulse,
+  'Strength': Dumbbell,
+  'Stretching/Yoga': Flower,
 }
 
 const ratingFields = [
