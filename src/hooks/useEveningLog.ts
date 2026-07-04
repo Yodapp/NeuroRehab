@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { fetchTodayLog, upsertTodayLog } from '@/lib/dailyLog'
+import { fetchDailyLog, localToday, upsertDailyLog } from '@/lib/dailyLog'
 import { useAuth } from '@/contexts/AuthContext'
 import type { Activity, DailyLog } from '@/types'
 
@@ -17,8 +17,9 @@ export interface UseEveningLogResult {
 }
 
 // TODO: extract daily log state into a shared DailyLogContext to avoid race condition with useTodayLog on first write
-export function useEveningLog(): UseEveningLogResult {
+export function useEveningLog(targetDate?: string): UseEveningLogResult {
   const { user } = useAuth()
+  const date = targetDate ?? localToday()
   const [activities, setActivities] = useState<ActivityWithStatus[]>([])
   const [log, setLog] = useState<DailyLog | null>(null)
   const [loading, setLoading] = useState(true)
@@ -26,10 +27,12 @@ export function useEveningLog(): UseEveningLogResult {
 
   useEffect(() => {
     if (!user) return
+    let cancelled = false
 
     async function fetchData() {
-      const dailyLog = await fetchTodayLog(user!.id)
-      setLog(dailyLog)
+      setLoading(true)
+
+      const dailyLog = await fetchDailyLog(user!.id, date)
 
       // Fetch user's enabled activities
       const { data: userActivities } = await supabase
@@ -42,7 +45,7 @@ export function useEveningLog(): UseEveningLogResult {
         ? userActivities.map((ua: any) => ua.activities as Activity)
         : []
 
-      // Fetch activity logs for today
+      // Fetch activity logs for the target date
       let completedIds: Set<string> = new Set()
       if (dailyLog) {
         const { data: activityLogs } = await supabase
@@ -57,6 +60,8 @@ export function useEveningLog(): UseEveningLogResult {
         }
       }
 
+      if (cancelled) return
+      setLog(dailyLog)
       setActivities(
         activityList.map((a) => ({ ...a, completed: completedIds.has(a.id) }))
       )
@@ -64,7 +69,8 @@ export function useEveningLog(): UseEveningLogResult {
     }
 
     fetchData()
-  }, [user])
+    return () => { cancelled = true }
+  }, [user, date])
 
   useEffect(() => {
     return () => {
@@ -79,7 +85,7 @@ export function useEveningLog(): UseEveningLogResult {
       // Ensure daily log exists
       let currentLog = log
       if (!currentLog) {
-        currentLog = await upsertTodayLog(user.id, {})
+        currentLog = await upsertDailyLog(user.id, {}, date)
         if (currentLog) setLog(currentLog)
       }
       if (!currentLog) return
@@ -95,7 +101,7 @@ export function useEveningLog(): UseEveningLogResult {
         prev.map((a) => (a.id === activityId ? { ...a, completed } : a))
       )
     },
-    [user, log]
+    [user, log, date]
   )
 
   const updateRating = useCallback(
@@ -107,11 +113,11 @@ export function useEveningLog(): UseEveningLogResult {
 
       clearTimeout(debounceTimers.current[field])
       debounceTimers.current[field] = setTimeout(async () => {
-        const updated = await upsertTodayLog(user.id, { [field]: value })
+        const updated = await upsertDailyLog(user.id, { [field]: value }, date)
         if (updated) setLog(updated)
       }, 500)
     },
-    [user]
+    [user, date]
   )
 
   return { activities, log, loading, toggleActivity, updateRating }

@@ -37,11 +37,12 @@ export function getTodayPhase(
 
 export function getPhaseLabel(
   protocolType: ProtocolType,
-  protocolStartDate: string | null
+  protocolStartDate: string | null,
+  date?: string
 ): string {
   if (protocolType === 'none' || !protocolStartDate) return ''
 
-  const offset = ((calcDayOffset(protocolStartDate) % 7) + 7) % 7
+  const offset = ((calcDayOffset(protocolStartDate, date) % 7) + 7) % 7
 
   if (protocolType === 'stamets_4_3') {
     if (offset < 4) return `Dosing Day ${offset + 1} of 4`
