@@ -5,13 +5,18 @@ import type { PhaseResult } from '@/lib/protocol'
 import type { UserProfile } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 
+export type SupplementField = 'took_psilocybin' | 'took_niacin' | 'took_lions_mane' | 'took_morning_meds'
+
 export interface DaySummary {
   date: string
   phase: PhaseResult
   stacksCount: number
   tasksCount: number
+  supplements: Record<SupplementField, boolean>
+  completedActivities: string[]
   energyRating: number | null
   focusRating: number | null
+  symptomRating: number | null
   hasLog: boolean
 }
 
@@ -95,24 +100,24 @@ export function useWeekData(): UseWeekDataResult {
       const logs = logsRes.data ?? []
       const logMap = new Map(logs.map((l: any) => [l.date, l]))
 
-      // Fetch activity logs for all daily_log_ids in this week
+      // Fetch completed activity names for all daily_log_ids in this week
       const logIds = logs.map((l: any) => l.id)
-      let activityCountMap = new Map<string, number>()
+      const activityNamesMap = new Map<string, string[]>()
       if (logIds.length > 0) {
         const { data: activityLogs } = await supabase
           .from('activity_logs')
-          .select('daily_log_id')
+          .select('daily_log_id, activities(name)')
           .in('daily_log_id', logIds)
           .eq('completed', true)
 
         if (activityLogs) {
-          for (const al of activityLogs) {
+          for (const al of activityLogs as any[]) {
             const logEntry = logs.find((l: any) => l.id === al.daily_log_id)
-            if (logEntry) {
-              activityCountMap.set(
-                logEntry.date,
-                (activityCountMap.get(logEntry.date) ?? 0) + 1
-              )
+            const name = al.activities?.name
+            if (logEntry && name) {
+              const names = activityNamesMap.get(logEntry.date) ?? []
+              names.push(name)
+              activityNamesMap.set(logEntry.date, names)
             }
           }
         }
@@ -129,20 +134,25 @@ export function useWeekData(): UseWeekDataResult {
           ? getPhaseForDate(prof.protocol_type, prof.protocol_start_date, dateStr)
           : 'none'
 
+        const supplements = {} as Record<SupplementField, boolean>
         let stacksCount = 0
-        if (log) {
-          for (const field of supplementFields) {
-            if (log[field]) stacksCount++
-          }
+        for (const field of supplementFields) {
+          supplements[field] = !!log?.[field]
+          if (supplements[field]) stacksCount++
         }
+
+        const completedActivities = activityNamesMap.get(dateStr) ?? []
 
         daySummaries.push({
           date: dateStr,
           phase,
           stacksCount,
-          tasksCount: activityCountMap.get(dateStr) ?? 0,
+          tasksCount: completedActivities.length,
+          supplements,
+          completedActivities,
           energyRating: log?.energy_rating ?? null,
           focusRating: log?.focus_rating ?? null,
+          symptomRating: log?.symptom_rating ?? null,
           hasLog: !!log,
         })
       }

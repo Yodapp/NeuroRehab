@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { DaySummary } from '@/hooks/useWeekData'
 
@@ -11,6 +12,9 @@ interface WeeklyOverviewProps {
   onPrevWeek: () => void
   onNextWeek: () => void
   isCurrentWeek: boolean
+  selectedDate: string | null
+  onSelectDay: (date: string) => void
+  children?: ReactNode
 }
 
 function Sparkline({ data }: { data: (number | null)[] }) {
@@ -62,17 +66,21 @@ export function WeeklyOverview({
   onPrevWeek,
   onNextWeek,
   isCurrentWeek,
+  selectedDate,
+  onSelectDay,
+  children,
 }: WeeklyOverviewProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <button onClick={onPrevWeek} className="flex h-11 w-11 items-center justify-center rounded-[14px]">
+        <button onClick={onPrevWeek} aria-label="Previous week" className="flex h-11 w-11 items-center justify-center rounded-[14px]">
           <ChevronLeft size={22} className="text-text-secondary" />
         </button>
         <span className="text-body font-medium">{weekLabel}</span>
         <button
           onClick={onNextWeek}
           disabled={isCurrentWeek}
+          aria-label="Next week"
           className={`flex h-11 w-11 items-center justify-center rounded-[14px] ${isCurrentWeek ? 'opacity-30' : ''}`}
         >
           <ChevronRight size={22} className="text-text-secondary" />
@@ -80,29 +88,42 @@ export function WeeklyOverview({
       </div>
 
       <div className="flex gap-2 overflow-x-auto">
-        {days.map((day, i) => (
-          <div
-            key={day.date}
-            className={`flex min-w-[44px] flex-1 flex-col items-center gap-2 rounded-[14px] p-2 text-center ${
-              day.phase === 'rest'
-                ? 'bg-bg-inactive'
-                : day.hasLog
-                  ? 'bg-bg-card ring-1 ring-border-subtle'
-                  : 'bg-bg-card/50'
-            }`}
-          >
-            <span className="text-meta font-medium">{dayNames[i]}</span>
-            {day.phase === 'rest' ? (
-              <span className="text-meta text-text-secondary">Rest</span>
-            ) : (
-              <>
-                <DotRow filled={day.stacksCount} max={4} />
-                <SquareRow filled={day.tasksCount} max={4} />
-              </>
-            )}
-          </div>
-        ))}
+        {days.map((day, i) => {
+          const isSelected = day.date === selectedDate
+          const bg = day.phase === 'rest'
+            ? 'bg-bg-inactive'
+            : day.hasLog
+              ? 'bg-bg-card'
+              : 'bg-bg-card/50'
+          const ring = isSelected
+            ? 'ring-2 ring-accent-gold'
+            : day.phase !== 'rest' && day.hasLog
+              ? 'ring-1 ring-border-subtle'
+              : ''
+          return (
+            <button
+              key={day.date}
+              onClick={() => onSelectDay(day.date)}
+              className={`flex min-w-[44px] flex-1 flex-col items-center gap-2 rounded-[14px] p-2 text-center transition-base ${bg} ${ring}`}
+            >
+              <span className="text-meta font-medium">{dayNames[i]}</span>
+              {day.phase === 'rest' ? (
+                <span className="text-meta text-text-secondary">Rest</span>
+              ) : (
+                <>
+                  {day.phase === 'active' && (
+                    <span className="text-meta text-accent-green">Dose</span>
+                  )}
+                  <DotRow filled={day.stacksCount} max={4} />
+                  <SquareRow filled={day.tasksCount} max={4} />
+                </>
+              )}
+            </button>
+          )
+        })}
       </div>
+
+      {children}
 
       <div className="flex flex-col gap-4 rounded-[14px] border border-border-subtle bg-bg-card p-4">
         <div className="flex items-center justify-between">
