@@ -8,7 +8,8 @@ create table profiles (
   protocol_type text not null default 'none',
   protocol_start_date date,
   enabled_supplements text[] default array['lions_mane', 'morning_meds'],
-  onboarding_completed boolean default false
+  onboarding_completed boolean default false,
+  intention text
 );
 
 -- activities (master list)
@@ -106,3 +107,6 @@ insert into activities (name, categories, description, external_url, is_default)
   ('Casual Video Games',  array['fine_motor_focus', 'attention_memory'],       'Tränar reaktion och koordination',  null, true),
   ('Programmering',       array['logic_problem_solving', 'attention_memory'],  'Tränar problemlösning och fokus',   null, true),
   ('Promenad',            array['physical'],                                   'Stödjer neuroplasticitet',          null, true);
+
+-- Migration: add intention (mantra) field to existing profiles table
+alter table profiles add column if not exists intention text;

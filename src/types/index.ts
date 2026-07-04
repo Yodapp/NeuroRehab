@@ -13,6 +13,7 @@ export interface UserProfile {
   protocol_start_date: string
   enabled_supplements: string[]
   onboarding_completed: boolean
+  intention: string | null
 }
 
 export interface Activity {
