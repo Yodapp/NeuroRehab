@@ -1,4 +1,4 @@
-import { localToday } from '@/lib/dailyLog'
+import { localDateISO, parseLocalDate } from '@/lib/date'
 import type { DaySummary } from '../hooks/useWeekData'
 
 interface WeekStripProps {
@@ -10,7 +10,7 @@ interface WeekStripProps {
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export function WeekStrip({ days, selectedDate, onSelectDay }: WeekStripProps) {
-  const today = localToday()
+  const today = localDateISO()
 
   return (
     <div className="flex justify-between px-1">
@@ -42,7 +42,7 @@ export function WeekStrip({ days, selectedDate, onSelectDay }: WeekStripProps) {
                     ? 'bg-bg-inactive text-text-disabled'
                     : 'bg-bg-card text-text-secondary'
               }`}>
-              {new Date(day.date + 'T12:00:00').getDate()}
+              {parseLocalDate(day.date).getDate()}
             </div>
 
             <div className={`w-1.5 h-1.5 rounded-full ${hasDose ? 'bg-accent-green' : 'bg-transparent'}`} />

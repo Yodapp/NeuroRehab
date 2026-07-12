@@ -1,12 +1,11 @@
+import { localDateISO, parseLocalDate } from '@/lib/date'
 import type { ProtocolType } from '@/types'
 
 export type PhaseResult = 'active' | 'rest' | 'none'
 
 function calcDayOffset(startDate: string, targetDate?: string): number {
-  const now = new Date()
-  const local = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  const start = new Date(startDate + 'T00:00:00')
-  const target = new Date((targetDate ?? local) + 'T00:00:00')
+  const start = parseLocalDate(startDate)
+  const target = parseLocalDate(targetDate ?? localDateISO())
   return Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
 }
 

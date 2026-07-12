@@ -1,5 +1,6 @@
 import { Brain, Leaf, Pill, Zap } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
+import type { DailyLogBooleanField } from '@/lib/dailyLog'
 import type { PhaseResult } from '@/lib/protocol'
 import type { DailyLog, UserProfile } from '@/types'
 
@@ -7,11 +8,11 @@ interface MorningChecklistProps {
   profile: UserProfile
   log: DailyLog | null
   phase: PhaseResult
-  onToggle: (field: keyof DailyLog, value: boolean) => void
+  onToggle: (field: DailyLogBooleanField, value: boolean) => void
 }
 
 export const supplementItems: {
-  field: keyof DailyLog
+  field: DailyLogBooleanField
   label: string
   subtitle: string
   tip?: string

@@ -18,6 +18,15 @@ const supplementLabels: Record<string, string> = {
   morning_meds: 'Morning Medication',
 }
 
+interface UserActivityNameRow {
+  activities: { name: string } | { name: string }[] | null
+}
+
+function getActivityName(row: UserActivityNameRow): string | null {
+  const activity = Array.isArray(row.activities) ? row.activities[0] : row.activities
+  return activity?.name ?? null
+}
+
 interface ProfileProps {
   profile: UserProfile
   onEditSettings: () => void
@@ -45,7 +54,11 @@ export function Profile({ profile, onEditSettings }: ProfileProps) {
       .eq('is_enabled', true)
       .then(({ data }) => {
         if (data) {
-          setActivityNames(data.map((r: any) => r.activities?.name).filter(Boolean))
+          setActivityNames(
+            (data as UserActivityNameRow[])
+              .map(getActivityName)
+              .filter((name): name is string => Boolean(name))
+          )
         }
       })
   }, [user])

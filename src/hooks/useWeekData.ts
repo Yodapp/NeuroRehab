@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { localDateISO } from '@/lib/date'
 import { getPhaseForDate } from '@/lib/protocol'
 import type { PhaseResult } from '@/lib/protocol'
-import type { UserProfile } from '@/types'
+import type { DailyLog, UserProfile } from '@/types'
 import { useAuth } from '@/contexts/AuthContext'
 
 export type SupplementField = 'took_psilocybin' | 'took_niacin' | 'took_lions_mane' | 'took_morning_meds'
@@ -26,12 +27,23 @@ export interface UseWeekDataResult {
   avgFocus: number | null
   avgEnergy: number | null
   loading: boolean
+  error: string | null
   goToPrevWeek: () => void
   goToNextWeek: () => void
   isCurrentWeek: boolean
 }
 
 const supplementFields = ['took_psilocybin', 'took_niacin', 'took_lions_mane', 'took_morning_meds'] as const
+
+interface ActivityLogWithActivity {
+  daily_log_id: string
+  activities: { name: string } | { name: string }[] | null
+}
+
+function getRelatedActivityName(row: ActivityLogWithActivity): string | null {
+  const activity = Array.isArray(row.activities) ? row.activities[0] : row.activities
+  return activity?.name ?? null
+}
 
 function getMonday(weekOffset: number): Date {
   const now = new Date()
@@ -41,10 +53,6 @@ function getMonday(weekOffset: number): Date {
   monday.setDate(now.getDate() + diff)
   monday.setHours(0, 0, 0, 0)
   return monday
-}
-
-function toISO(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function formatWeekLabel(monday: Date): string {
@@ -71,94 +79,109 @@ export function useWeekData(): UseWeekDataResult {
   const [weekOffset, setWeekOffset] = useState(0)
   const [days, setDays] = useState<DaySummary[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const monday = getMonday(weekOffset)
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
 
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+      setDays([])
+      setLoading(false)
+      setError(null)
+      return
+    }
 
     async function fetchData() {
       setLoading(true)
+      setError(null)
 
-      const startDate = toISO(monday)
-      const endDate = toISO(sunday)
+      try {
+        const startDate = localDateISO(monday)
+        const endDate = localDateISO(sunday)
 
-      const [profileRes, logsRes] = await Promise.all([
-        supabase.from('profiles').select('*').eq('id', user!.id).single(),
-        supabase
-          .from('daily_logs')
-          .select('*')
-          .eq('user_id', user!.id)
-          .gte('date', startDate)
-          .lte('date', endDate),
-      ])
+        const [profileRes, logsRes] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', user!.id).single(),
+          supabase
+            .from('daily_logs')
+            .select('*')
+            .eq('user_id', user!.id)
+            .gte('date', startDate)
+            .lte('date', endDate),
+        ])
+        if (profileRes.error) throw profileRes.error
+        if (logsRes.error) throw logsRes.error
 
-      const prof = profileRes.data as UserProfile | null
+        const prof = profileRes.data as UserProfile | null
 
-      const logs = logsRes.data ?? []
-      const logMap = new Map(logs.map((l: any) => [l.date, l]))
+        const logs = (logsRes.data ?? []) as DailyLog[]
+        const logMap = new Map(logs.map((l) => [l.date, l]))
 
-      // Fetch completed activity names for all daily_log_ids in this week
-      const logIds = logs.map((l: any) => l.id)
-      const activityNamesMap = new Map<string, string[]>()
-      if (logIds.length > 0) {
-        const { data: activityLogs } = await supabase
-          .from('activity_logs')
-          .select('daily_log_id, activities(name)')
-          .in('daily_log_id', logIds)
-          .eq('completed', true)
+        const logIds = logs.map((l) => l.id)
+        const activityNamesMap = new Map<string, string[]>()
+        if (logIds.length > 0) {
+          const { data: activityLogs, error: activityLogsError } = await supabase
+            .from('activity_logs')
+            .select('daily_log_id, activities(name)')
+            .in('daily_log_id', logIds)
+            .eq('completed', true)
+          if (activityLogsError) throw activityLogsError
 
-        if (activityLogs) {
-          for (const al of activityLogs as any[]) {
-            const logEntry = logs.find((l: any) => l.id === al.daily_log_id)
-            const name = al.activities?.name
-            if (logEntry && name) {
-              const names = activityNamesMap.get(logEntry.date) ?? []
-              names.push(name)
-              activityNamesMap.set(logEntry.date, names)
+          if (activityLogs) {
+            for (const al of activityLogs as ActivityLogWithActivity[]) {
+              const logEntry = logs.find((l) => l.id === al.daily_log_id)
+              const name = getRelatedActivityName(al)
+              if (logEntry && name) {
+                const names = activityNamesMap.get(logEntry.date) ?? []
+                names.push(name)
+                activityNamesMap.set(logEntry.date, names)
+              }
             }
           }
         }
-      }
 
-      const daySummaries: DaySummary[] = []
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(monday)
-        d.setDate(monday.getDate() + i)
-        const dateStr = toISO(d)
-        const log = logMap.get(dateStr)
+        const daySummaries: DaySummary[] = []
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday)
+          d.setDate(monday.getDate() + i)
+          const dateStr = localDateISO(d)
+          const log = logMap.get(dateStr)
 
-        const phase = prof
-          ? getPhaseForDate(prof.protocol_type, prof.protocol_start_date, dateStr)
-          : 'none'
+          const phase = prof
+            ? getPhaseForDate(prof.protocol_type, prof.protocol_start_date, dateStr)
+            : 'none'
 
-        const supplements = {} as Record<SupplementField, boolean>
-        let stacksCount = 0
-        for (const field of supplementFields) {
-          supplements[field] = !!log?.[field]
-          if (supplements[field]) stacksCount++
+          const supplements = {} as Record<SupplementField, boolean>
+          let stacksCount = 0
+          for (const field of supplementFields) {
+            supplements[field] = !!log?.[field]
+            if (supplements[field]) stacksCount++
+          }
+
+          const completedActivities = activityNamesMap.get(dateStr) ?? []
+
+          daySummaries.push({
+            date: dateStr,
+            phase,
+            stacksCount,
+            tasksCount: completedActivities.length,
+            supplements,
+            completedActivities,
+            energyRating: log?.energy_rating ?? null,
+            focusRating: log?.focus_rating ?? null,
+            symptomRating: log?.symptom_rating ?? null,
+            hasLog: !!log,
+          })
         }
 
-        const completedActivities = activityNamesMap.get(dateStr) ?? []
-
-        daySummaries.push({
-          date: dateStr,
-          phase,
-          stacksCount,
-          tasksCount: completedActivities.length,
-          supplements,
-          completedActivities,
-          energyRating: log?.energy_rating ?? null,
-          focusRating: log?.focus_rating ?? null,
-          symptomRating: log?.symptom_rating ?? null,
-          hasLog: !!log,
-        })
+        setDays(daySummaries)
+      } catch {
+        setError('Could not load week.')
+        setDays([])
+      } finally {
+        setLoading(false)
       }
-
-      setDays(daySummaries)
-      setLoading(false)
     }
 
     fetchData()
@@ -183,6 +206,7 @@ export function useWeekData(): UseWeekDataResult {
     avgFocus: avgFocus ? Math.round(avgFocus * 10) / 10 : null,
     avgEnergy: avgEnergy ? Math.round(avgEnergy * 10) / 10 : null,
     loading,
+    error,
     goToPrevWeek,
     goToNextWeek,
     isCurrentWeek: weekOffset === 0,

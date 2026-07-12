@@ -15,7 +15,7 @@ create table profiles (
 -- activities (master list)
 create table activities (
   id uuid primary key default uuid_generate_v4(),
-  name text not null,
+  name text not null unique,
   categories text[] not null,        -- e.g. ['fine_motor_focus', 'logic_problem_solving']
   description text,
   external_url text,
@@ -57,6 +57,18 @@ create table activity_logs (
   unique(daily_log_id, activity_id)
 );
 
+create or replace function public.set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger set_daily_logs_updated_at
+  before update on daily_logs
+  for each row execute procedure public.set_updated_at();
+
 -- Auto-create a profile row when a new user signs up
 create or replace function public.handle_new_user()
 returns trigger as $$
@@ -82,17 +94,21 @@ alter table daily_logs enable row level security;
 alter table activity_logs enable row level security;
 
 create policy "Users can only access their own profile"
-  on profiles for all using (auth.uid() = id);
+  on profiles for all using (auth.uid() = id)
+  with check (auth.uid() = id);
 
 create policy "Users can only access their own activity settings"
-  on user_activities for all using (auth.uid() = user_id);
+  on user_activities for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create policy "Users can only access their own daily logs"
-  on daily_logs for all using (auth.uid() = user_id);
+  on daily_logs for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create policy "Users can only access their own activity logs"
   on activity_logs for all
-  using (daily_log_id in (select id from daily_logs where user_id = auth.uid()));
+  using (daily_log_id in (select id from daily_logs where user_id = auth.uid()))
+  with check (daily_log_id in (select id from daily_logs where user_id = auth.uid()));
 
 alter table activities enable row level security;
 
@@ -120,7 +136,12 @@ insert into activities (name, categories, description, external_url, is_default)
   ('Meditation',          array['mind_body'],                                  'Sit quietly, focus on breath or a mantra', null, false),
   ('Mindfulness',         array['mind_body'],                                  'Present-moment awareness practice', null, false),
   ('Social Connection',   array['mind_body'],                                  'Meaningful time with friends or family', null, false),
-  ('Time in Nature',      array['mind_body'],                                  'Spend time outdoors, away from screens', null, false);
+  ('Time in Nature',      array['mind_body'],                                  'Spend time outdoors, away from screens', null, false)
+on conflict (name) do update set
+  categories = excluded.categories,
+  description = excluded.description,
+  external_url = excluded.external_url,
+  is_default = excluded.is_default;
 
 -- Migration: add intention (mantra) field to existing profiles table
 alter table profiles add column if not exists intention text;
@@ -133,16 +154,6 @@ delete from activity_logs
 delete from user_activities
   where activity_id in (select id from activities where name = 'Programmering');
 delete from activities where name = 'Programmering';
-
-insert into activities (name, categories, description, external_url, is_default) values
-  ('Breathwork',         array['mind_body'], 'A few minutes of structured breathing', null, false),
-  ('Meditation',         array['mind_body'], 'Sit quietly, focus on breath or a mantra', null, false),
-  ('Mindfulness',        array['mind_body'], 'Present-moment awareness practice', null, false),
-  ('Social Connection',  array['mind_body'], 'Meaningful time with friends or family', null, false),
-  ('Time in Nature',     array['mind_body'], 'Spend time outdoors, away from screens', null, false),
-  ('Cardio',             array['physical'],  'Running, cycling, or anything that gets your heart rate up', null, false),
-  ('Strength',           array['physical'],  'Resistance or weight training', null, false),
-  ('Stretching/Yoga',    array['physical'],  'Gentle mobility and flexibility work', null, false);
 
 -- Migration: translate remaining Swedish activity name/descriptions on an
 -- already-seeded database (fresh installs get correct English text from the

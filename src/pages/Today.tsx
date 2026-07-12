@@ -39,6 +39,8 @@ export function Today() {
     )
   }
 
+  const error = todayLog.error ?? eveningLog.error
+
   return (
     <div className="flex flex-col gap-8 overflow-y-auto p-5 pb-32">
       <div>
@@ -47,6 +49,12 @@ export function Today() {
           {dateFmt.format(new Date(actualToday + 'T12:00:00'))}
         </p>
       </div>
+
+      {error && (
+        <p className="rounded-[14px] border border-accent-red/40 bg-accent-red/10 p-3 text-meta text-accent-red">
+          {error}
+        </p>
+      )}
 
       {todayLog.profile?.intention ? (
         <blockquote className="border-l-2 border-accent-gold pl-4 text-body italic text-accent-gold">

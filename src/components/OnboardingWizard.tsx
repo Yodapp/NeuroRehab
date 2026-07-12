@@ -23,6 +23,10 @@ const categoryLabels: Record<string, string> = {
   mind_body: 'Mind & Presence',
 }
 
+interface UserActivityRow {
+  activity_id: string
+}
+
 export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizardProps) {
   const { user } = useAuth()
   const [step, setStep] = useState(1)
@@ -51,10 +55,15 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
   const [allActivities, setAllActivities] = useState<Activity[]>([])
   const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('activities').select('*')
+      const { data, error } = await supabase.from('activities').select('*').order('name')
+      if (error) {
+        setSaveError('Could not load activities. Please try again.')
+        return
+      }
       if (data) {
         setAllActivities(data)
         if (!initialValues) {
@@ -62,16 +71,20 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
         }
       }
       if (initialValues && user) {
-        const { data: ua } = await supabase
+        const { data: ua, error: userActivitiesError } = await supabase
           .from('user_activities')
           .select('activity_id')
           .eq('user_id', user.id)
           .eq('is_enabled', true)
-        if (ua) setSelectedActivityIds(ua.map((r: any) => r.activity_id))
+        if (userActivitiesError) {
+          setSaveError('Could not load your activity settings. Please try again.')
+          return
+        }
+        if (ua) setSelectedActivityIds((ua as UserActivityRow[]).map((r) => r.activity_id))
       }
     }
     load()
-  }, [])
+  }, [initialValues, user])
 
   const totalSteps = usesMicrodosing ? 5 : 4
   const displayStep = (() => {
@@ -116,29 +129,45 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
   async function handleComplete() {
     if (!user) return
     setSaving(true)
+    setSaveError(null)
 
-    await supabase
-      .from('profiles')
-      .update({
-        protocol_type: usesMicrodosing ? protocolType : 'none',
-        protocol_start_date: protocolStartDate || null,
-        enabled_supplements: enabledSupplements,
-        onboarding_completed: true,
-      })
-      .eq('id', user.id)
+    try {
+      if (selectedActivityIds.length > 0) {
+        const rows = selectedActivityIds.map((activityId) => ({
+          user_id: user.id,
+          activity_id: activityId,
+          is_enabled: true,
+        }))
+        const { error } = await supabase
+          .from('user_activities')
+          .upsert(rows, { onConflict: 'user_id,activity_id' })
+        if (error) throw error
 
-    await supabase.from('user_activities').delete().eq('user_id', user.id)
+        const { error: disableError } = await supabase
+          .from('user_activities')
+          .update({ is_enabled: false })
+          .eq('user_id', user.id)
+          .not('activity_id', 'in', `(${selectedActivityIds.join(',')})`)
+        if (disableError) throw disableError
+      }
 
-    if (selectedActivityIds.length > 0) {
-      const rows = selectedActivityIds.map((activityId) => ({
-        user_id: user.id,
-        activity_id: activityId,
-        is_enabled: true,
-      }))
-      await supabase.from('user_activities').insert(rows)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          protocol_type: usesMicrodosing ? protocolType : 'none',
+          protocol_start_date: usesMicrodosing ? protocolStartDate || null : null,
+          enabled_supplements: enabledSupplements,
+          onboarding_completed: true,
+        })
+        .eq('id', user.id)
+      if (profileError) throw profileError
+
+      onComplete()
+    } catch {
+      setSaveError('Could not save your settings. Please try again.')
+    } finally {
+      setSaving(false)
     }
-
-    onComplete()
   }
 
   const actualStep = displayStep
@@ -165,6 +194,12 @@ export function OnboardingWizard({ onComplete, initialValues }: OnboardingWizard
       </div>
 
       <div className="flex flex-1 flex-col">
+        {saveError && (
+          <p className="mb-4 rounded-[14px] border border-accent-red/40 bg-accent-red/10 p-3 text-meta text-accent-red">
+            {saveError}
+          </p>
+        )}
+
         {/* Step 1 — Microdosing */}
         {actualStep === 1 && (
           <div className="flex flex-1 flex-col gap-6">

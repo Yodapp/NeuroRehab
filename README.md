@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# NeuroRehab
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Small React/Vite app for tracking a rehabilitation routine, daily supplements,
+activities, ratings, and weekly trends. It is deployed on Vercel and stores user
+data in Supabase.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript
+- Vite
+- Tailwind CSS
+- Supabase Auth + Postgres
+- Vercel Analytics
+- Vitest
+- Oxlint
 
-## React Compiler
+## Environment
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Create a local `.env` file with the public Supabase project values:
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The app validates these at startup so missing Vercel/local env vars fail early.
+
+## Development
+
+```sh
+npm install
+npm run dev
+npm test -- --run
+npm run build
+npm run lint
+```
+
+If `npm run lint` fails because an Oxlint native binding is missing, refresh
+dependencies with a clean install. This can happen when npm skips optional
+platform packages.
+
+## Supabase
+
+The current schema and seed data live in `supabase/schema.sql`.
+
+Important notes:
+
+- RLS is enabled on user-owned tables.
+- `activities.name` is unique so seed data can be upserted without duplicates.
+- Client code uses the anon key only; never add service-role keys to Vite env.
